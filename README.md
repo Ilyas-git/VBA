@@ -1,89 +1,96 @@
 # Dynamic KPI Dashboard & Automated PDF Generator
 
-Proyek otomatisasi pelaporan berbasis **VBA (Visual Basic for Applications)** di Microsoft Excel untuk menyelesaikan kebutuhan manajemen bisnis: pembuatan dan distribusi laporan ringkasan performa cabang/departemen bulanan dalam format PDF siap cetak, serta pembuatan draf email Microsoft Outlook secara otomatis.
+An enterprise grade reporting automation system built with **VBA (Visual Basic for Applications)** in Microsoft Excel. Designed to address recurring business management needs: dynamic monthly performance monitoring per department/branch, automated 1-click batch PDF report generation, and streamlined email distribution drafts via Microsoft Outlook integration.
 
 ---
 
-## 📌 Ringkasan Masalah Bisnis & Solusi
+## 📌 Business Problem & Automated Solution
 
-| Aspek | Deskripsi |
-| :--- | :--- |
-| **Masalah Bisnis** | Manajemen membutuhkan ringkasan performa bulanan untuk setiap cabang dalam format PDF siap cetak. Jika dilakukan manual (filter satu per satu, save as PDF, buat email draf satu per satu), proses ini memakan waktu berjam-jam dan rentan *human error*. |
-| **Solusi Otomatisasi** | Dashboard interaktif dengan tombol & dropdown yang terhubung ke Pivot Table via VBA. Dilengkapi tombol **Batch PDF Export** (1-klik untuk generate seluruh cabang) dan integrasi **Outlook Automation** untuk membuat draf email lengkap dengan lampiran PDF masing-masing cabang. |
-| **Level** | Menengah (*Intermediate - Corporate Analytics Standard*) |
-| **File Utama** | `Dynamic_KPI_Dashboard_Reporting.xlsm` |
+| Aspect                       | Description                                                                                                                                                                                                                                                                                                                         |
+| :--------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Business Problem**   | Management requires monthly performance summaries for each regional branch in a print-ready executive PDF format, delivered regularly. Manual processing (filtering branches one by one, saving as PDF, drafting individual emails, and attaching files) consumes hours of repetitive labor and is highly error-prone.              |
+| **Automated Solution** | An interactive executive dashboard with dropdown filters linked dynamically to Pivot Tables via VBA. Features a**Batch PDF Export** engine (1 click generation across all active branches) and **Outlook Automation** to create personalized email drafts with customized HTML KPI summaries and attached PDF reports. |
+| **Level**              | Intermediate (*Corporate Analytics & BI Automation Standard*)                                                                                                                                                                                                                                                                     |
+| **Core File**          | `Dynamic_KPI_Dashboard_Reporting.xlsm`                                                                                                                                                                                                                                                                                            |
 
 ---
 
-## 🚀 Fitur Unggulan
+## 🚀 Key Features
 
 1. **Interactive Filter Dashboard**
-   - Dropdown seleksi cabang (*Branch*) dan bulan (*Month*) pada sel `C4` dan `C5`.
-   - Event `Worksheet_Change` otomatis menyinkronkan visualisasi dan metrik saat dropdown dipilih.
-   - Tombol **[Apply Filter]** dan **[Reset All]** untuk fleksibilitas pengguna.
-2. **Batch PDF Export (Sekali Klik)**
-   - Tombol **[Generate Monthly Reports]** mengiterasi daftar cabang aktif dari lembar konfigurasi.
-   - Mengatur `PageSetup` (A4 Landscape, Fit to 1 Page Wide & Tall, margin proporsional).
-   - Menghasilkan file PDF individual dengan format penamaan standar:
-     `Report_[NamaCabang]_[Bulan].pdf` (contoh: `Report_Jakarta_YTD_2026.pdf`).
-   - Menyimpan output rapi di folder `Reports/`.
+   - In-cell dropdown selectors for branch (`C4`) and month period (`C5`).
+   - Integrated `Worksheet_Change` event handler that updates Pivot Tables, KPI metrics, and visualizations immediately upon selection.
+   - Dedicated **[Apply Filter]** and **[Reset All]** action buttons for manual control.
+2. **1-Click Batch PDF Export**
+   - **[Generate Monthly Reports]** button iterates through all active branches listed in the configuration directory.
+   - Automated `PageSetup` configuration (A4 Landscape, Fit to 1 Page Wide & Tall, proportional margins).
+   - Exports individual, print-ready executive PDFs using standard file naming:
+     `Report_[BranchName]_[Month].pdf` (e.g., `Report_Jakarta_YTD_2026.pdf`).
+   - Saves all output systematically into the `Reports/` directory.
 3. **Outlook Automation (Late Binding)**
-   - Tombol **[Create Outlook Drafts]** membuat draf email di Microsoft Outlook tanpa memerlukan referensi pustaka awal (*Late Binding* via `CreateObject("Outlook.Application")`).
-   - Mencocokkan nama manajer cabang, alamat email penerima, dan CC dari tabel konfigurasi.
-   - Otomatis melampirkan file PDF cabang terkait dan menyusun *body email* berformat HTML modern dengan ringkasan metrik KPI (Revenue, Target, Achievement).
+   - **[Create Outlook Drafts]** button automates email generation without requiring early-bound library dependencies (*Late Binding* via `CreateObject("Outlook.Application")`).
+   - Dynamically maps branch managers, recipient email addresses, and CC recipients from the configuration sheet.
+   - Automatically attaches the corresponding branch PDF report and builds a responsive HTML email body with an executive KPI summary table (Actual Revenue, Target, Achievement Rate).
+4. **Self-Healing Master Data Sync**
+   - **[Sync / Refresh Master Data]** button automatically scans `tblSalesData` for newly added branches or months.
+   - Refreshes the Pivot Cache (`PivotCache.Refresh`), updates master lists in `Settings_Config`, re-binds Data Validation ranges, and registers newly added branches into the email recipient directory.
 
 ---
 
-## 🛠️ Struktur Proyek & File
+## 🛠️ Project Structure & Directory Layout
 
 ```text
 d:\Data Analyst Project\VBA\
 │
-├── Dynamic_KPI_Dashboard_Reporting.xlsm   # File Excel Macro-Enabled siap pakai
-├── build_project.py                      # Skrip automasi pembangunan workbook & inject modul
-├── README.md                             # Dokumentasi teknis & panduan operasional
+├── Dynamic_KPI_Dashboard_Reporting.xlsm   # Production Macro-Enabled Excel Workbook
+├── build_project.py                      # Automated COM workbook generator & module injector
+├── README.md                             # Project overview & technical documentation (English)
+├── PANDUAN_PEMBUATAN_PROJECT_VBA.md      # End-to-end tutorial & step-by-step build guide
 │
-├── Reports/                              # Direktori output PDF hasil batch export
+├── Reports/                              # Output directory for exported executive PDFs
 │   ├── Report_Bali_YTD_2026.pdf
 │   ├── Report_Bandung_YTD_2026.pdf
 │   ├── Report_Jakarta_YTD_2026.pdf
 │   ├── Report_Medan_YTD_2026.pdf
 │   └── Report_Surabaya_YTD_2026.pdf
 │
-└── src/                                  # Source code VBA modular (.bas & .cls)
-    ├── mod_Config.bas                    # Konfigurasi nama sheet, range, & path
-    ├── mod_DashboardFilter.bas           # Logika manipulasi PivotFields & filtering
-    ├── mod_BatchExportPDF.bas            # Engine Batch Export PDF & PageSetup
-    ├── mod_OutlookAutomation.bas         # Integrasi Outlook Late Binding & HTML email
-    ├── mod_Utils.bas                     # Utility: speed up runtime, folder I/O, sanitasi
-    └── Sheet_Dashboard.cls               # Event handler Worksheet_Change
+└── src/                                  # Modular VBA source code (.bas & .cls)
+    ├── mod_Config.bas                    # Global constants, sheet names, cell ranges & paths
+    ├── mod_DashboardFilter.bas           # PivotField manipulation, filtering, & master data sync
+    ├── mod_BatchExportPDF.bas            # Batch PDF export engine & PageSetup configuration
+    ├── mod_OutlookAutomation.bas         # Outlook Late Binding & responsive HTML email builder
+    ├── mod_Utils.bas                     # Speed optimization, folder I/O, & file sanitization
+    └── Sheet_Dashboard.cls               # Worksheet_Change event handler for auto-filtering
 ```
 
 ---
 
-## 📊 Struktur Sheet dalam Workbook
+## 📊 Workbook Architecture & Worksheet Structure
 
-1. **`Dashboard`**
-   - Header korporat eksekutif.
-   - Panel kontrol (Dropdown Cabang & Bulan, status Active View, timestamp update).
-   - 4 Kartu KPI Utama: **Actual Revenue**, **Target Revenue**, **Achievement Rate**, dan **Gross Profit & Margin**.
-   - Tabel Rincian Kinerja per Departemen (Enterprise Solutions, Cloud & Infrastructure, Hardware & Devices, Consulting Services).
-   - Tabel Benchmark Kinerja Antar-Cabang (Jakarta, Surabaya, Bandung, Medan, Bali).
-2. **`Data`**
-   - Tabel data transaksi riil (180 baris data).
-   - Kolom: `Date`, `Month_Year`, `Branch`, `Department`, `Sales_Rep`, `Target`, `Actual_Revenue`, `COGS`, `Gross_Profit`.
-3. **`Pivot_Calculations`**
-   - Mesin komputasi berbasis Pivot Table (`ptKPISummary`).
-   - Menggunakan `Branch` dan `Month_Year` sebagai Report Filters (`xlPageField`).
-4. **`Settings_Config`**
-   - Pengaturan lokasi folder output laporan PDF.
-   - Tabel pemetaan cabang: Nama Cabang, Nama Manajer, Email Penerima, dan Email CC.
+1. **`Dashboard` (Presentation Layer)**
+   - Executive header banner and filter control panel (Branch & Month dropdowns, active status, last-updated timestamp).
+   - 4 Executive KPI Cards: **Actual Revenue**, **Target Revenue**, **Achievement Rate**, and **Gross Profit & Margin** (powered by `=IFERROR(GETPIVOTDATA(...), 0)`).
+   - Department Performance Breakdown Table (Enterprise Solutions, Cloud & Infrastructure, Hardware & Devices, Consulting Services).
+   - Regional Benchmark Comparison Table (Jakarta, Surabaya, Bandung, Medan, Bali).
+   - 5 Corporate Action Buttons (Apply Filter, Reset All, Sync Master Data, Generate Reports, Create Outlook Drafts).
+2. **`Data` (Data Layer)**
+   - Standardized transaction records formatted as an official Excel Table (`ListObject`: `tblSalesData`).
+   - Fields: `Date`, `Month_Year`, `Branch`, `Department`, `Sales_Rep`, `Target`, `Actual_Revenue`, `COGS`, `Gross_Profit`.
+   - `Month_Year` formatted explicitly as Text (`@`) to prevent unintended serial date conversions and ensure robust formula matching.
+3. **`Pivot_Calculations` (Calculation Engine)**
+   - Backend high-speed aggregation powered by Pivot Table `ptKPISummary`.
+   - Uses `Branch` and `Month_Year` as Page Filters (`xlPageField`) and `Department` as Row Labels.
+4. **`Settings_Config` (Configuration & Directory)**
+   - Custom report export folder destination (Cell `C4`).
+   - Branch Manager Contact Directory (Columns B–E: Branch, Manager Name, Primary Email, CC Email).
+   - Master Dropdown Validation Lists (Columns G & H: Master Branches, Master Months).
 
 ---
 
-## 💡 Pembahasan Teknis & Skill VBA yang Ditonjolkan
+## 💡 Technical Highlights & Featured VBA Skills
 
-### 1. Manipulasi `PivotFields` & Filter Dinamis
+### 1. Dynamic `PivotFields` Manipulation & Performance Locks
+
 ```vba
 Dim pt As PivotTable
 Dim pfBranch As PivotField
@@ -91,7 +98,7 @@ Dim pfBranch As PivotField
 Set pt = ThisWorkbook.Sheets("Pivot_Calculations").PivotTables("ptKPISummary")
 Set pfBranch = pt.PivotFields("Branch")
 
-' Mengunci refresh sementara untuk performa tinggi
+' Suppress UI recalculations during filter adjustment for maximum execution speed
 pt.ManualUpdate = True
 
 If branchVal = "All Branches" Then
@@ -103,16 +110,18 @@ End If
 
 pt.ManualUpdate = False
 ```
-* **Best Practice**: `pt.ManualUpdate = True` menghentikan rendering kalkulasi ulang Pivot Table di setiap pergantian properti sebelum seluruh filter siap, mencegah lag visual.
-* **Event Guard**: Sebelum mengubah nilai sel dropdown via kode, `Application.EnableEvents = False` diaktifkan untuk mencegah loop rekursif pada event `Worksheet_Change`.
+
+* **Best Practice**: `pt.ManualUpdate = True` prevents visual screen thrashing and expensive intermediate recalculations while properties are being set.
+* **Event Guarding**: Setting `Application.EnableEvents = False` before changing cell values programmatically prevents infinite loops inside the `Worksheet_Change` event handler.
 
 ---
 
-### 2. Batch Export PDF dengan `ExportAsFixedFormat` & `PageSetup`
+### 2. High-Quality Batch PDF Export with `ExportAsFixedFormat` & `PageSetup`
+
 ```vba
-' 1. Konfigurasi Halaman agar Pas 1 Halaman Landscape
+' 1. Ensure clean, proportional 1-page landscape layout
 With ws.PageSetup
-    .PrintArea = "A1:N27"
+    .PrintArea = "A1:N28"
     .Orientation = xlLandscape
     .PaperSize = xlPaperA4
     .Zoom = False
@@ -121,7 +130,7 @@ With ws.PageSetup
     .CenterHorizontally = True
 End With
 
-' 2. Ekspor Tampilan Sheet menjadi File PDF
+' 2. Export worksheet view to individual PDF file
 ws.ExportAsFixedFormat _
     Type:=xlTypePDF, _
     Filename:=targetPdfPath, _
@@ -130,17 +139,19 @@ ws.ExportAsFixedFormat _
     IgnorePrintAreas:=False, _
     OpenAfterPublish:=False
 ```
-* **Kelebihan**: Format PDF yang dihasilkan proporsional (tidak terpotong antar halaman) dan siap cetak untuk rapat direksi.
-* **Sanitasi File**: Nama cabang dan bulan disaring dengan fungsi `CleanFileName()` untuk mencegah error karakter terlarang Windows seperti `\ / : * ? " < > |`.
+
+* **Print-Ready Output**: Enforces strict single-page landscape dimensions suitable for board-level executive distribution.
+* **File Name Sanitization**: Branch and period strings are filtered via `CleanFileName()` to strip illegal Windows filesystem characters (`\ / : * ? " < > |`).
 
 ---
 
-### 3. Integrasi Microsoft Outlook via Late Binding
+### 3. Microsoft Outlook Integration via Late Binding
+
 ```vba
 Dim outlookApp As Object
 Dim mailItem As Object
 
-' Late Binding: Tidak memerlukan checklist manual di Tools > References
+' Late Binding: No manual reference required in Tools > References
 On Error Resume Next
 Set outlookApp = GetObject(, "Outlook.Application")
 If outlookApp Is Nothing Then
@@ -148,23 +159,25 @@ If outlookApp Is Nothing Then
 End If
 On Error GoTo ErrHandler
 
-' Membuat objek email baru (0 = olMailItem)
+' Create new email item (0 = olMailItem)
 Set mailItem = outlookApp.CreateItem(0)
 With mailItem
     .To = managerEmail
     .CC = ccEmail
-    .Subject = "[CONFIDENTIAL] Laporan Kinerja Bulanan - Cabang " & branchName & " (" & selectedMonth & ")"
-    .HTMLBody = GenerateEmailHTMLBody(...)
+    .Subject = "[CONFIDENTIAL] Monthly Performance Report - " & branchName & " (" & selectedMonth & ")"
+    .HTMLBody = BuildEmailBodyHTML(branchName, managerName, selectedMonth, revVal, tgtVal, achVal)
     .Attachments.Add pdfPath
-    .Save ' Menyimpan ke folder Drafts Outlook untuk verifikasi sebelum dikirim
+    .Save ' Saves safely to Outlook Drafts folder for review before sending
 End With
 ```
-* **Late Binding vs Early Binding**: Menggunakan `CreateObject("Outlook.Application")` memastikan workbook dapat dijalankan di komputer manapun tanpa risiko error `"Missing Reference: Microsoft Outlook Object Library"`.
-* **Keamanan Operasional**: Mode default menggunakan `.Save` (masuk ke folder *Drafts*) sehingga pengguna memiliki kesempatan memeriksa draf sebelum terkirim ke alamat email sungguhan.
+
+* **Late Binding Advantage**: Using `CreateObject("Outlook.Application")` ensures the workbook runs seamlessly across different workstations and Office versions without `"Missing Reference: Microsoft Outlook Object Library"` compile errors.
+* **Operational Safety**: Defaults to `.Save` into the user's **Drafts** folder, providing human-in-the-loop review before live delivery.
 
 ---
 
-### 4. Optimalisasi Kinerja & Penanganan Error
+### 4. Runtime Performance Optimization
+
 ```vba
 Public Sub OptimizePerformance(ByVal enableSpeedMode As Boolean)
     With Application
@@ -185,34 +198,39 @@ Public Sub OptimizePerformance(ByVal enableSpeedMode As Boolean)
     End With
 End Sub
 ```
-* Memangkas waktu eksekusi batch loop hingga 70-80% dengan menonaktifkan *screen repaint* dan kalkulasi formula otomatis berulang.
+
+* Accelerates batch execution loops by **70–80%** by disabling screen repaints, dialog alerts, and repetitive formula calculations during batch loops.
 
 ---
 
-## 📖 Panduan Penggunaan
+## 📖 Operational Guide
 
-1. **Membuka File**
-   - Buka file `Dynamic_KPI_Dashboard_Reporting.xlsm` di Microsoft Excel.
-   - Jika muncul peringatan keamanan *"Security Warning: Macros have been disabled"*, klik **Enable Content**.
-2. **Mengubah Tampilan Dashboard**
-   - Ubah pilihan pada dropdown **Pilih Cabang** (sel `C4`) atau **Pilih Bulan** (sel `C5`).
-   - Dashboard akan otomatis terupdate. Anda juga dapat menekan tombol **[Apply Filter]** atau **[Reset All]**.
-3. **Mengekspor Laporan PDF Seluruh Cabang**
-   - Klik tombol **[Generate Monthly Reports]**.
-   - Konfirmasi dialog yang muncul.
-   - Status proses akan tampil di *Status Bar* bawah Excel.
-   - Setelah selesai, dialog akan menampilkan konfirmasi dan menawarkan untuk langsung membuka folder `Reports/`.
-4. **Membuat Draf Email Outlook**
-   - Pastikan aplikasi Microsoft Outlook terpasang.
-   - Klik tombol **[Create Outlook Drafts]**.
-   - Script akan memverifikasi file PDF (membuat otomatis jika belum ada), menyusun email HTML, melampirkan file PDF, dan menyimpannya di folder **Drafts** Outlook Anda.
+### 1. Opening the Workbook
 
----
+- Open `Dynamic_KPI_Dashboard_Reporting.xlsm` in Microsoft Excel.
+- If prompted with *"Security Warning: Macros have been disabled"*, click **Enable Content**.
 
-## 💼 Nilai Portofolio & Wawancara Data Analyst
+### 2. Interacting with the Dashboard
 
-Proyek ini mendemonstrasikan kompetensi komprehensif:
-1. **Business Sense**: Memahami alur kerja eksekutif, kebutuhan pelaporan terstandardisasi, dan kepatuhan data rahasia (*confidentiality*).
-2. **Advanced Automation**: Menguasai integrasi antar-aplikasi Microsoft 365 (Excel ke PDF ke Outlook).
-3. **Clean Code & Architecture**: Kode tersusun rapi dalam modul terpisah (*Separation of Concerns*), penamaan variabel konsisten (*CamelCase*), serta error handling terstruktur.
+- Select any branch from the **Branch** dropdown (`C4`) or period from the **Month** dropdown (`C5`).
+- The dashboard, KPI cards, and breakdown charts will update automatically via worksheet events.
+- Click **[Reset All]** to return to the aggregate organization-wide view.
 
+### 3. Exporting PDF Reports in Batch
+
+- Click **[Generate Monthly Reports]**.
+- Confirm the dialog prompt.
+- Progress will be displayed in real time on Excel's bottom *Status Bar*.
+- Upon completion, a summary notification will offer to open the `Reports/` directory directly in Windows Explorer.
+
+### 4. Creating Outlook Email Drafts
+
+- Ensure Microsoft Outlook is installed on your computer.
+- Click **[Create Outlook Drafts]**.
+- The script automatically verifies or generates the required branch PDFs, compiles personalized HTML email bodies with KPI tables, attaches the PDFs, and saves the emails directly into your Outlook **Drafts** folder.
+
+### 5. Adding New Data or Branches Dynamically
+
+1. Open the **`Data`** sheet and append new transaction rows at the bottom of table `tblSalesData`.
+2. Return to the **`Dashboard`** sheet and click **[Sync / Refresh Master Data]**.
+3. The VBA engine automatically refreshes the Pivot Cache, detects new branches/months, updates dropdown options, and adds new branches into the email configuration directory.
